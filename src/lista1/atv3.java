@@ -1,6 +1,10 @@
+// Faça um programa onde o usuário escolhe a quantidade
+// de linhas e colunas de uma matriz. Logo em seguida, crie a matriz,
+// preencha e mostre a soma de todas as linhas (uma por vez) e de
+// todas as colunas (uma por vez).
+
 package lista1;
 
-import java.util.Arrays;
 import java.util.Scanner;
 
 public class atv3 {
@@ -20,7 +24,6 @@ public class atv3 {
                 matriz[l][c] = s.nextInt();
             }
         }
-
 
         for (int l = 0; l < matriz.length; l++) {
             for (int c = 0; c < matriz[l].length; c++) {
