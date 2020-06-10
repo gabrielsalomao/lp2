@@ -1,13 +1,13 @@
-package lista2.atv2;
+package lista3.atv1;
 
 public class Carro {
-    public String marca;
-    public String modelo;
-    public String cor;
-    public String placa;
-    public int velocidade;
-    public int marcha;
-    public boolean ligado;
+    String marca;
+    String modelo;
+    String cor;
+    String placa;
+    int velocidade;
+    int marcha;
+    boolean ligado;
 
     public String mostrarDados() {
         return "Marca: " + this.marca + "\nModelo: " + this.modelo +
