@@ -1,6 +1,6 @@
 package lista5;
 
-public class Livro {
+class Livro {
     private String nome;
     private int anoLancamento;
     private int qtdeExemplaresDisponiveis;
@@ -45,6 +45,6 @@ public class Livro {
 
     public void printAll() {
         System.out.println("Nome: " + this.nome + "\nLançamento: " + this.anoLancamento +
-                "\nExemplares disponiveis: " + this.anoLancamento);
+                "\nExemplares disponiveis: " + this.qtdeExemplaresDisponiveis);
     }
 }

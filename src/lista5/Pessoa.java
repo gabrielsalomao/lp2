@@ -1,6 +1,6 @@
 package lista5;
 
-public class Pessoa {
+class Pessoa {
     private String nome;
     private char tipo;
     private int qtdeLivrosEmprestados;
