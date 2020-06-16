@@ -1,4 +1,4 @@
-package lista3.atv1;
+package lista3;
 
 public class Carro {
     String marca;

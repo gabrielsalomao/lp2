@@ -1,4 +1,4 @@
-package lista3.atv1;
+package lista3;
 
 import java.util.ArrayList;
 import java.util.Scanner;
