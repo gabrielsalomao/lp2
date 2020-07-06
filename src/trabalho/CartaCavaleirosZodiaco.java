@@ -16,17 +16,77 @@ public class CartaCavaleirosZodiaco extends CartaSuperTrunfo {
         this.forca = forca;
     }
 
-    public void printALl() {
+    public int getSoco() {
+        return this.soco;
+    }
 
+    public void setSoco(int soco) {
+        this.soco = soco;
+    }
+
+    public int getChute() {
+        return this.chute;
+    }
+
+    public void setChute(int chute) {
+        this.chute = chute;
+    }
+
+    public int getTecnica() {
+        return this.tecnica;
+    }
+
+    public void setTecnica() {
+        this.tecnica = tecnica;
+    }
+
+    public int getConhecimentos() {
+        return this.conhecimentos;
+    }
+
+    public void setConhecimentos(int conhecimentos) {
+        this.conhecimentos = conhecimentos;
+    }
+
+    public int getForca() {
+        return this.forca;
+    }
+
+    public void setForca(int forca) {
+        this.forca = forca;
+    }
+
+    public void printALl() {
+        super.printAll();
+        System.out.println("SOCO: " + this.getSoco());
+        System.out.println("CHUTE: " + this.getChute());
+        System.out.println("TÉCNICA: " + this.getTecnica());
+        System.out.println("CONHECIMENTOS: " + this.getConhecimentos());
+        System.out.println("FORÇA: " + this.getForca());
     }
 
     @Override
     public void mostrarListaAtributos() {
         System.out.println("1 - SOCO");
+        System.out.println("2 - CHUTE");
+        System.out.println("3 - TÉCNICA");
+        System.out.println("4 - CONHECIMENTOS");
+        System.out.println("5 - FORÇA");
     }
 
     @Override
     public int getAtributo(int atributo) {
-        return 0;
+        switch (atributo) {
+            case 1:
+                return this.getSoco();
+            case 2:
+                return this.getChute();
+            case 3:
+                return this.getTecnica();
+            case 4:
+                return this.getConhecimentos();
+            default:
+                return this.getForca();
+        }
     }
 }
