@@ -1,11 +1,16 @@
 package trabalho;
 
+import java.net.Socket;
 import java.util.ArrayList;
 
 public class Jogador {
     private String nome;
     private int vitorias;
-    private ArrayList<CartaSuperTrunfo> cartas;
+    public boolean jogadorDaVez;
+    public int atributoSelecionado;
+    public CartaCavaleirosZodiaco cartaAtual;
+    private ArrayList<CartaCavaleirosZodiaco> cartasCavaleiro;
+    public Socket socket;
 
     public Jogador(String nome) {
         this.nome = nome;
@@ -27,24 +32,24 @@ public class Jogador {
         this.vitorias = vitorias;
     }
 
-    public ArrayList<CartaSuperTrunfo> getCartas() {
-        return this.cartas;
+    public ArrayList<CartaCavaleirosZodiaco> getCartasCavaleiro() {
+        return this.cartasCavaleiro;
     }
 
-    public void setCartas(ArrayList<CartaSuperTrunfo> cartas) {
-        this.cartas = cartas;
+    public void setCartas(ArrayList<CartaCavaleirosZodiaco> cartas) {
+        this.cartasCavaleiro = cartas;
     }
 
-    public CartaSuperTrunfo getProximaCarta(){
-        return this.getCartas().remove(0);
+    public CartaCavaleirosZodiaco getProximaCarta() {
+        return this.getCartasCavaleiro().remove(0);
     }
 
-    public void adicionarCarta(CartaSuperTrunfo carta) {
-        this.getCartas().add(carta);
+    public void adicionarCartaCavaleiro(CartaCavaleirosZodiaco cartas) {
+        this.getCartasCavaleiro().add(cartas);
     }
 
     public int getQuantidadeCartas() {
-        return this.getCartas().size();
+        return this.getCartasCavaleiro().size();
     }
 
     public boolean isSemCartas() {

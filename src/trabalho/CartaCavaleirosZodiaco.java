@@ -56,13 +56,13 @@ public class CartaCavaleirosZodiaco extends CartaSuperTrunfo {
         this.forca = forca;
     }
 
-    public void printALl() {
-        super.printAll();
-        System.out.println("SOCO: " + this.getSoco());
-        System.out.println("CHUTE: " + this.getChute());
-        System.out.println("TÉCNICA: " + this.getTecnica());
-        System.out.println("CONHECIMENTOS: " + this.getConhecimentos());
-        System.out.println("FORÇA: " + this.getForca());
+    public String printALl() {
+        return (super.printAlll() +
+        "\n1-SOCO: " + this.getSoco() +
+        "\n2-CHUTE: " + this.getChute() +
+        "\n3-TÉCNICA: " + this.getTecnica()+
+        "\n4-CONHECIMENTOS: " + this.getConhecimentos()+
+        "\n5-FORÇA: " + this.getForca());
     }
 
     @Override

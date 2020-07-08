@@ -35,25 +35,24 @@ public abstract class CartaSuperTrunfo {
         this.trunfo = trunfo;
     }
 
-    public void printAll() {
-        System.out.println("NOME: " + this.getNome());
-        System.out.println("IDENTIFICADOR: " + this.getIdentificador());
-        System.out.println("TRUNFO: " + (this.getTrunfo() ? "SIM" : "NÃO"));
+    public String printAlll() {
+        return "NOME: " + this.getNome() +
+                "\nIDENTIFICADOR: " + this.getIdentificador() +
+                "\nTRUNFO: " + (this.getTrunfo() ? "SIM" : "NÃO");
     }
 
     public abstract void mostrarListaAtributos();
+
+    public abstract int getAtributo(int atributo);
 
     public boolean CompararTrunfo(CartaSuperTrunfo cartaAdversario) {
         return cartaAdversario.getTrunfo();
     }
 
-    public abstract int getAtributo(int atributo);
-
     public int compararAtributo(CartaSuperTrunfo cartaAdversaria, int atributo) {
-        if (this.getAtributo(atributo) > cartaAdversaria.getAtributo(atributo)){
+        if (this.getAtributo(atributo) > cartaAdversaria.getAtributo(atributo)) {
             return 1;
-        }
-        else if (this.getAtributo(atributo) < cartaAdversaria.getAtributo(atributo)){
+        } else if (this.getAtributo(atributo) < cartaAdversaria.getAtributo(atributo)) {
             return 2;
         } else {
             return 0;
