@@ -1,5 +1,6 @@
 package trabalho;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -22,4 +23,6 @@ public abstract class JogoSuperTrunfo {
     public int vencedor() {
         return this.jogador1.isSemCartas() ? 1 : this.jogador2.isSemCartas() ? 2 : 0;
     }
+
+    public abstract void gravarLogJogo() throws IOException;
 }

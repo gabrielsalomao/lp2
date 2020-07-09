@@ -17,9 +17,9 @@ public class Cliente {
     }
 
     public void executa() throws UnknownHostException, IOException {
-        try(Socket cliente = new Socket(this.host, this.porta);
-            Scanner teclado = new Scanner(System.in);
-            PrintStream saida = new PrintStream(cliente.getOutputStream())) {
+        try (Socket cliente = new Socket(this.host, this.porta);
+             Scanner teclado = new Scanner(System.in);
+             PrintStream saida = new PrintStream(cliente.getOutputStream())) {
             System.out.println("Bem-vindo");
 
 

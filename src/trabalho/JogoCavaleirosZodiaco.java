@@ -1,9 +1,9 @@
 package trabalho;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 
 public class JogoCavaleirosZodiaco extends JogoSuperTrunfo {
     private ArrayList<CartaCavaleirosZodiaco> cartas;
@@ -84,5 +84,32 @@ public class JogoCavaleirosZodiaco extends JogoSuperTrunfo {
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
+    }
+
+    public int vencedor() {
+        return jogador1.getVitorias() > jogador2.getVitorias() ? 1 : jogador1.getVitorias() < jogador2.getVitorias() ? 2 : 0;
+    }
+
+    public void gravarLogJogo() throws IOException {
+        var buffer = new BufferedWriter(new FileWriter("C:\\logJogos\\logJogos.txt", true));
+        Jogador vencedor = null;
+
+        switch (vencedor()) {
+            case 1:
+                vencedor = this.jogador1;
+                break;
+            case 2:
+                vencedor = this.jogador2;
+                break;
+        }
+
+        buffer.write("Cavaleiros J1: " + this.jogador1.getNome() +
+                " J2: " + this.jogador2.getNome() +
+                " V: " + vencedor.getNome() +
+                " D/H: " + new Date());
+
+        buffer.newLine();
+
+        buffer.close();
     }
 }

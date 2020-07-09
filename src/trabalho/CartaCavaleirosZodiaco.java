@@ -89,4 +89,19 @@ public class CartaCavaleirosZodiaco extends CartaSuperTrunfo {
                 return this.getForca();
         }
     }
+
+    public String getNomeAtributo(int atributo) {
+        switch (atributo) {
+            case 1:
+                return "SOCO";
+            case 2:
+                return "CHUTE";
+            case 3:
+                return "TÉCNICA";
+            case 4:
+                return "CONHECIMENTOS";
+            default:
+                return "FORÇA";
+        }
+    }
 }
