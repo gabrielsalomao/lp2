@@ -48,8 +48,166 @@ public class JogoCavaleirosZodiaco extends JogoSuperTrunfo {
             cartasJogador2.add(this.cartas.remove(0));
         }
 
-        this.jogador1.setCartas(cartasJogador1);
-        this.jogador2.setCartas(cartasJogador2);
+        this.jogador1.setCartasCavaleiro(cartasJogador1);
+        this.jogador2.setCartasCavaleiro(cartasJogador2);
+    }
+
+    public void getCartaAtualDosJogadoresCavaleiro(Jogador j1, Jogador j2) throws IOException {
+        var ps = new PrintStream(j2.socket.getOutputStream());
+        ps.println("\nSUA CARTA\n" + j2.cartaAtualCavaleiro.printALl());
+
+        var ps1 = new PrintStream(j1.socket.getOutputStream());
+        ps1.println("\nSUA CARTA\n" + j1.cartaAtualCavaleiro.printALl());
+    }
+
+    public void setCartaAtualDosJogadoresCavaleiro(Jogador j1, Jogador j2) {
+        j1.cartaAtualCavaleiro = j1.getProximaCartaCavaleiro();
+        j2.cartaAtualCavaleiro = j2.getProximaCartaCavaleiro();
+    }
+
+    public boolean verificaTrunfoCavaleiro(Jogador atual, Jogador adversario, boolean novaPartida) throws IOException {
+        var ps1 = new PrintStream(atual.socket.getOutputStream());
+        var ps2 = new PrintStream(adversario.socket.getOutputStream());
+
+        if (atual.cartaAtualCavaleiro.getTrunfo()) {
+            novaPartida = true;
+
+            ps1.println("TRUNFO - VOCE VENCEU");
+            ps2.println("OPONENTE TINHA TRUNFO - VOCE PERDEU");
+
+            atual.jogadorDaVez = false;
+            adversario.jogadorDaVez = true;
+
+            atual.jogadorDaVez = false;
+            adversario.jogadorDaVez = true;
+
+            return true;
+        } else if (adversario.cartaAtualCavaleiro.getTrunfo()) {
+            novaPartida = true;
+
+            ps2.println("TRUNFO - VOCE VENCEU");
+            ps1.println("OPONENTE TINHA TRUNFO - VOCE PERDEU");
+
+            atual.jogadorDaVez = false;
+            adversario.jogadorDaVez = true;
+
+            atual.jogadorDaVez = false;
+            adversario.jogadorDaVez = true;
+
+            return true;
+        }
+        return false;
+    }
+
+    public void compararCartasCavaleiro(String estadoDaPartida, boolean empate, boolean novaPartida, Jogador j1, Jogador j2, Jogador atual, Jogador adversario, int atributo) throws IOException {
+        var ps1 = new PrintStream(atual.socket.getOutputStream());
+        var ps2 = new PrintStream(adversario.socket.getOutputStream());
+
+        int vencedor = atual.cartaAtualCavaleiro.compararAtributo(adversario.cartaAtualCavaleiro, atributo);
+
+        atual.jogadorDaVez = false;
+        adversario.jogadorDaVez = true;
+
+        CartaCavaleirosZodiaco tempAtualCart = atual.cartaAtualCavaleiro;
+        CartaCavaleirosZodiaco tempAdversarioCart = adversario.cartaAtualCavaleiro;
+
+        if (this.verificaTrunfoCavaleiro(j1, j2, novaPartida)) {
+            if (this.verificaCartas(j1, j2, estadoDaPartida))
+                return;
+            this.setCartaAtualDosJogadoresCavaleiro(j1, j2);
+            this.getCartaAtualDosJogadoresCavaleiro(j1, j2);
+            this.enviarInfoParaJogadoresCavaleiro();
+            return;
+        } else {
+            switch (vencedor) {
+                case 1:
+                    ps1.println("ATRIBUTO ESCOLHIDO: " + tempAtualCart.getNomeAtributo(atributo));
+                    ps1.println("VALOR DO ATRIBUTO DO OPONENTE: " + tempAdversarioCart.getAtributo(atributo));
+
+                    ps2.println("ATRIBUTO ESCOLHIDO: " + tempAtualCart.getNomeAtributo(atributo));
+                    ps2.println("VALOR DO ATRIBUTO DO OPONENTE: " + tempAdversarioCart.getAtributo(atributo));
+
+                    ps2.println("Você perdeu");
+                    ps1.println("Você venceu");
+
+                    atual.incrementarVitorias();
+
+                    if (empate) {
+                        atual.incrementarVitorias();
+                        empate = false;
+                    }
+                    break;
+                case 2:
+                    ps1.println("ATRIBUTO ESCOLHIDO: " + tempAtualCart.getNomeAtributo(atributo));
+                    ps1.println("VALOR DO ATRIBUTO DO OPONENTE: " + tempAdversarioCart.getAtributo(atributo));
+
+                    ps2.println("ATRIBUTO ESCOLHIDO: " + tempAtualCart.getNomeAtributo(atributo));
+                    ps2.println("VALOR DO ATRIBUTO DO OPONENTE: " + tempAtualCart.getAtributo(atributo));
+
+                    ps1.println("Você perdeu");
+                    ps2.println("Você venceu");
+
+                    adversario.incrementarVitorias();
+
+                    if (empate) {
+                        adversario.incrementarVitorias();
+                        empate = false;
+                    }
+
+                    break;
+                default:
+                    ps2.println("Empate");
+                    ps1.println("Empate");
+
+                    empate = true;
+                    break;
+            }
+
+            if (this.verificaCartas(j1, j2, estadoDaPartida))
+                return;
+
+            this.setCartaAtualDosJogadoresCavaleiro(j1, j2);
+            this.getCartaAtualDosJogadoresCavaleiro(j1, j2);
+            this.enviarInfoParaJogadoresCavaleiro();
+        }
+    }
+
+    public void enviarInfoParaJogadoresCavaleiro() throws IOException {
+        var ps1 = new PrintStream(this.jogador1.socket.getOutputStream());
+        var ps2 = new PrintStream(this.jogador2.socket.getOutputStream());
+
+        if (this.jogador1.jogadorDaVez) {
+            ps1.println("Sua vez, escolha um atributo: ");
+            ps2.println("Vez do jogador 1, aguarde a escolha do atributo");
+        } else {
+            ps2.println("Sua vez, escolha um atributo: ");
+            ps1.println("Vez do jogador 2, aguarde a escolha do atributo");
+        }
+    }
+
+    public boolean verificaCartas(Jogador j1, Jogador j2, String estadoDaPartida) throws IOException {
+        if (j1.isSemCartasCavaleiro() && j2.isSemCartasCavaleiro() && estadoDaPartida != "FINALIZADA") {
+            var ps1 = new PrintStream(this.jogador1.socket.getOutputStream());
+            var ps2 = new PrintStream(this.jogador2.socket.getOutputStream());
+
+            switch (this.vencedor()) {
+                case 1:
+                    ps1.println("Voce venceu");
+                    ps2.println("Voce perdeu");
+                    break;
+                case 2:
+                    ps2.println("Voce venceu");
+                    ps1.println("Voce perdeu");
+                    break;
+            }
+
+            ps1.println("Precione enter para nova partida");
+            ps2.println("Precione enter para nova partida");
+
+            estadoDaPartida = "FINALIZADA";
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -94,7 +252,7 @@ public class JogoCavaleirosZodiaco extends JogoSuperTrunfo {
         var buffer = new BufferedWriter(new FileWriter("C:\\logJogos\\logJogos.txt", true));
         Jogador vencedor = null;
 
-        switch (vencedor()) {
+        switch (this.vencedor()) {
             case 1:
                 vencedor = this.jogador1;
                 break;

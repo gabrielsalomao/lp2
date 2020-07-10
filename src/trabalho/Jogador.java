@@ -8,8 +8,11 @@ public class Jogador {
     private int vitorias;
     public boolean jogadorDaVez;
     public int atributoSelecionado;
-    public CartaCavaleirosZodiaco cartaAtual;
+    public CartaCavaleirosZodiaco cartaAtualCavaleiro;
+    public CartaHeroisMarvel cartaAtualHeroi;
     private ArrayList<CartaCavaleirosZodiaco> cartasCavaleiro;
+    public CartaHeroisMarvel cartaHeroisMarvel;
+    private ArrayList<CartaHeroisMarvel> cartasHerois;
     public Socket socket;
 
     public Jogador(String nome) {
@@ -36,24 +39,48 @@ public class Jogador {
         return this.cartasCavaleiro;
     }
 
-    public void setCartas(ArrayList<CartaCavaleirosZodiaco> cartas) {
+    public void setCartasCavaleiro(ArrayList<CartaCavaleirosZodiaco> cartas) {
         this.cartasCavaleiro = cartas;
     }
 
-    public CartaCavaleirosZodiaco getProximaCarta() {
+    public ArrayList<CartaHeroisMarvel> getCartasHerois() {
+        return this.cartasHerois;
+    }
+
+    public void setCartasHerois(ArrayList<CartaHeroisMarvel> cartas) {
+        this.cartasHerois = cartas;
+    }
+
+    public CartaCavaleirosZodiaco getProximaCartaCavaleiro() {
         return this.getCartasCavaleiro().remove(0);
+    }
+
+    public CartaHeroisMarvel getProximaCartaHeroi() {
+        return this.getCartasHerois().remove(0);
     }
 
     public void adicionarCartaCavaleiro(CartaCavaleirosZodiaco cartas) {
         this.getCartasCavaleiro().add(cartas);
     }
 
-    public int getQuantidadeCartas() {
+    public void adicionarCartaHeroi(CartaHeroisMarvel cartas) {
+        this.getCartasHerois().add(cartas);
+    }
+
+    public int getQuantidadeCartasCavaleiro() {
         return this.getCartasCavaleiro().size();
     }
 
-    public boolean isSemCartas() {
-        return this.getQuantidadeCartas() == 0;
+    public int getQuantidadeCartasHeroi() {
+        return this.getCartasHerois().size();
+    }
+
+    public boolean isSemCartasCavaleiro() {
+        return this.getQuantidadeCartasCavaleiro() == 0;
+    }
+
+    public boolean isSemCartasHeroi() {
+        return this.getQuantidadeCartasHeroi() == 0;
     }
 
     public void incrementarVitorias() {
