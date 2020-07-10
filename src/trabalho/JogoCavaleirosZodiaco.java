@@ -1,6 +1,7 @@
 package trabalho;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -9,6 +10,7 @@ public class JogoCavaleirosZodiaco extends JogoSuperTrunfo {
     private ArrayList<CartaCavaleirosZodiaco> cartas;
     private ArrayList<CartaCavaleirosZodiaco> mesa;
     public int atributoEscolhido;
+    public String estadoDaPartida = "NOVO";
 
     public JogoCavaleirosZodiaco(Jogador jogador1, Jogador jogador2) {
         super(jogador1, jogador2);
@@ -72,34 +74,36 @@ public class JogoCavaleirosZodiaco extends JogoSuperTrunfo {
         if (atual.cartaAtualCavaleiro.getTrunfo()) {
             novaPartida = true;
 
+            this.getCartaAtualDosJogadoresCavaleiro(this.jogador1, this.jogador2);
+
             ps1.println("TRUNFO - VOCE VENCEU");
             ps2.println("OPONENTE TINHA TRUNFO - VOCE PERDEU");
 
             atual.jogadorDaVez = false;
             adversario.jogadorDaVez = true;
 
-            atual.jogadorDaVez = false;
-            adversario.jogadorDaVez = true;
+            atual.incrementarVitorias();
 
             return true;
         } else if (adversario.cartaAtualCavaleiro.getTrunfo()) {
             novaPartida = true;
 
+            this.getCartaAtualDosJogadoresCavaleiro(this.jogador1, this.jogador2);
+
             ps2.println("TRUNFO - VOCE VENCEU");
             ps1.println("OPONENTE TINHA TRUNFO - VOCE PERDEU");
 
-            atual.jogadorDaVez = false;
-            adversario.jogadorDaVez = true;
+            atual.jogadorDaVez = true;
+            adversario.jogadorDaVez = false;
 
-            atual.jogadorDaVez = false;
-            adversario.jogadorDaVez = true;
+            adversario.incrementarVitorias();
 
             return true;
         }
         return false;
     }
 
-    public void compararCartasCavaleiro(String estadoDaPartida, boolean empate, boolean novaPartida, Jogador j1, Jogador j2, Jogador atual, Jogador adversario, int atributo) throws IOException {
+    public void compararCartasCavaleiro(boolean empate, boolean novaPartida, Jogador j1, Jogador j2, Jogador atual, Jogador adversario, int atributo) throws IOException {
         var ps1 = new PrintStream(atual.socket.getOutputStream());
         var ps2 = new PrintStream(adversario.socket.getOutputStream());
 
@@ -112,7 +116,7 @@ public class JogoCavaleirosZodiaco extends JogoSuperTrunfo {
         CartaCavaleirosZodiaco tempAdversarioCart = adversario.cartaAtualCavaleiro;
 
         if (this.verificaTrunfoCavaleiro(j1, j2, novaPartida)) {
-            if (this.verificaCartas(j1, j2, estadoDaPartida))
+            if (this.verificaCartas(j1, j2))
                 return;
             this.setCartaAtualDosJogadoresCavaleiro(j1, j2);
             this.getCartaAtualDosJogadoresCavaleiro(j1, j2);
@@ -144,8 +148,8 @@ public class JogoCavaleirosZodiaco extends JogoSuperTrunfo {
                     ps2.println("ATRIBUTO ESCOLHIDO: " + tempAtualCart.getNomeAtributo(atributo));
                     ps2.println("VALOR DO ATRIBUTO DO OPONENTE: " + tempAtualCart.getAtributo(atributo));
 
-                    ps1.println("Você perdeu");
                     ps2.println("Você venceu");
+                    ps1.println("Você Perdeu");
 
                     adversario.incrementarVitorias();
 
@@ -163,10 +167,21 @@ public class JogoCavaleirosZodiaco extends JogoSuperTrunfo {
                     break;
             }
 
-            if (this.verificaCartas(j1, j2, estadoDaPartida))
+            if (this.verificaCartas(j1, j2))
                 return;
 
             this.setCartaAtualDosJogadoresCavaleiro(j1, j2);
+
+            if (this.verificaTrunfoCavaleiro(j1, j2, novaPartida)) {
+                if (this.verificaCartas(j1, j2)) {
+                    return;
+                }
+                this.setCartaAtualDosJogadoresCavaleiro(j1, j2);
+                this.getCartaAtualDosJogadoresCavaleiro(j1, j2);
+                this.enviarInfoParaJogadoresCavaleiro();
+                return;
+            }
+
             this.getCartaAtualDosJogadoresCavaleiro(j1, j2);
             this.enviarInfoParaJogadoresCavaleiro();
         }
@@ -185,26 +200,28 @@ public class JogoCavaleirosZodiaco extends JogoSuperTrunfo {
         }
     }
 
-    public boolean verificaCartas(Jogador j1, Jogador j2, String estadoDaPartida) throws IOException {
-        if (j1.isSemCartasCavaleiro() && j2.isSemCartasCavaleiro() && estadoDaPartida != "FINALIZADA") {
+    public boolean verificaCartas(Jogador j1, Jogador j2) throws IOException {
+        if (j1.isSemCartasCavaleiro() && j2.isSemCartasCavaleiro() && this.estadoDaPartida != "FINALIZADA") {
             var ps1 = new PrintStream(this.jogador1.socket.getOutputStream());
             var ps2 = new PrintStream(this.jogador2.socket.getOutputStream());
 
             switch (this.vencedor()) {
                 case 1:
-                    ps1.println("Voce venceu");
-                    ps2.println("Voce perdeu");
+                    ps1.println("\nVOCE VENCEU O JOGO");
+                    ps2.println("\nVOCE PERDEU O JOGO");
                     break;
                 case 2:
-                    ps2.println("Voce venceu");
-                    ps1.println("Voce perdeu");
+                    ps2.println("\nVOCE VENCEU O JOGO");
+                    ps1.println("\nVOCE PERDEU O JOGO");
                     break;
             }
 
             ps1.println("Precione enter para nova partida");
             ps2.println("Precione enter para nova partida");
 
-            estadoDaPartida = "FINALIZADA";
+            this.gravarLogJogo();
+
+            this.estadoDaPartida = "FINALIZADA";
             return true;
         }
         return false;
@@ -215,7 +232,7 @@ public class JogoCavaleirosZodiaco extends JogoSuperTrunfo {
         try {
             var cartas = new ArrayList<CartaCavaleirosZodiaco>();
 
-            var arquivo = new FileReader("C:\\cartas\\cavZod.txt");
+            var arquivo = new FileReader("src/trabalho/cartas/cavZod.txt", StandardCharsets.UTF_8);
 
             var buffer = new BufferedReader(arquivo);
 
@@ -249,7 +266,7 @@ public class JogoCavaleirosZodiaco extends JogoSuperTrunfo {
     }
 
     public void gravarLogJogo() throws IOException {
-        var buffer = new BufferedWriter(new FileWriter("C:\\logJogos\\logJogos.txt", true));
+        var buffer = new BufferedWriter(new FileWriter("src/trabalho/log/logJogos.txt", true));
         Jogador vencedor = null;
 
         switch (this.vencedor()) {

@@ -1,0 +1,6 @@
+Capitao America//2A//false//186//4//29//6//86
+Elektra//2B//false//173//4//15//6//80
+Hulk//1A//false//210//2//50//6//73
+Mulher Invisivel//3D//false//165//3//23//2//70
+Homem-Aranha//1B//true//175//7//36//11//66
+Tocha Humana//2D//false//175//4//26//5//71

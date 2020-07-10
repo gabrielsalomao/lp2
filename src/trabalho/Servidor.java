@@ -21,8 +21,8 @@ public class Servidor {
     private boolean novaPartida = false;
     private boolean empate = false;
     private ArrayList<CartaCavaleirosZodiaco> mesa = new ArrayList<>();
-    private String estadoDaPartida = "NOVO";
     private String tipoDoJogo = "";
+    private String estadoPartida = "NOVO";
 
     public Servidor(int porta) {
         this.porta = porta;
@@ -57,16 +57,27 @@ public class Servidor {
 
     public void distribuiMensagem(Socket clienteQueEnviou, String msg) throws IOException {
 
-        this.jogo1.verificaCartas(this.jogador1, this.jogador2, this.estadoDaPartida);
+        switch (this.tipoDoJogo) {
+            case "1":
+                this.estadoPartida = this.jogo1.estadoDaPartida;
+                break;
+            case "2":
+                this.estadoPartida = this.jogo2.estadoDaPartida;
+                break;
+        }
 
-        switch (this.estadoDaPartida) {
+        switch (this.estadoPartida) {
             case "NOVO":
                 if (this.jogador1.socket == null) {
                     this.cadastrarSocketDoJogador(this.jogador1, clienteQueEnviou, msg);
                     var ps1 = new PrintStream(this.jogador1.socket.getOutputStream());
                     ps1.println("Escolha o jogo:\n1-Cavaleiros do zodiaco\n2-Heróis Marvel");
-                } else if (tipoDoJogo == "") {
+                } else if (this.tipoDoJogo == "" || this.tipoDoJogo == "NOVOJOGO") {
                     var ps1 = new PrintStream(this.jogador1.socket.getOutputStream());
+
+                    if (this.tipoDoJogo == "NOVOJOGO") {
+                        ps1.println("Escolha o jogo:\n1-Cavaleiros do zodiaco\n2-Heróis Marvel");
+                    }
                     switch (msg) {
                         case "1":
                             this.tipoDoJogo = "1";
@@ -81,17 +92,38 @@ public class Servidor {
                         switch (this.tipoDoJogo) {
                             case "1":
                                 this.cadastrarSocketDoJogador(this.jogador2, clienteQueEnviou, msg);
-                                this.estadoDaPartida = "EMPROGRESSO";
+                                this.jogo1.estadoDaPartida = "EMPROGRESSO";
                                 this.jogo1.setCartaAtualDosJogadoresCavaleiro(this.jogador1, this.jogador2);
-                                this.jogo1.getCartaAtualDosJogadoresCavaleiro(this.jogador1, this.jogador2);
                                 this.jogadores.add(this.jogador1);
                                 this.jogadores.add(this.jogador2);
                                 Collections.shuffle(this.jogadores);
                                 if (this.jogo1.verificaTrunfoCavaleiro(this.jogadores.get(0), this.jogadores.get(1), this.novaPartida)) {
+                                    this.jogo1.setCartaAtualDosJogadoresCavaleiro(this.jogador1, this.jogador2);
+                                    this.jogo1.getCartaAtualDosJogadoresCavaleiro(this.jogador1, this.jogador2);
                                     this.jogo1.enviarInfoParaJogadoresCavaleiro();
                                 } else {
+                                    this.jogo1.getCartaAtualDosJogadoresCavaleiro(this.jogador1, this.jogador2);
+
                                     this.jogadores.get(0).jogadorDaVez = true;
                                     this.jogo1.enviarInfoParaJogadoresCavaleiro();
+                                }
+                                break;
+                            case "2":
+                                this.cadastrarSocketDoJogador(this.jogador2, clienteQueEnviou, msg);
+                                this.jogo2.estadoDaPartida = "EMPROGRESSO";
+                                this.jogo2.setCartaAtualDosJogadoresHeroi(this.jogador1, this.jogador2);
+                                this.jogadores.add(this.jogador1);
+                                this.jogadores.add(this.jogador2);
+                                Collections.shuffle(this.jogadores);
+                                if (this.jogo2.verificaTrunfoHeroi(this.jogadores.get(0), this.jogadores.get(1), this.novaPartida)) {
+                                    this.jogo2.setCartaAtualDosJogadoresHeroi(this.jogador1, this.jogador2);
+                                    this.jogo2.getCartaAtualDosJogadoresHeroi(this.jogador1, this.jogador2);
+                                    this.jogo2.enviarInfoParaJogadoresHeroi();
+                                } else {
+                                    this.jogo2.getCartaAtualDosJogadoresHeroi(this.jogador1, this.jogador2);
+
+                                    this.jogadores.get(0).jogadorDaVez = true;
+                                    this.jogo2.enviarInfoParaJogadoresHeroi();
                                 }
                                 break;
                         }
@@ -103,10 +135,18 @@ public class Servidor {
                 switch (this.tipoDoJogo) {
                     case "1":
                         if (clienteQueEnviou == this.jogador1.socket && this.jogador1.jogadorDaVez) {
-                            this.jogo1.compararCartasCavaleiro(this.estadoDaPartida, this.empate, this.novaPartida, this.jogador1, this.jogador2, this.jogador1, this.jogador2, Integer.parseInt(msg));
+                            this.jogo1.compararCartasCavaleiro(this.empate, this.novaPartida, this.jogador1, this.jogador2, this.jogador1, this.jogador2, Integer.parseInt(msg));
                         }
                         if (clienteQueEnviou == this.jogador2.socket && this.jogador2.jogadorDaVez) {
-                            this.jogo1.compararCartasCavaleiro(this.estadoDaPartida, this.empate, this.novaPartida, this.jogador1, this.jogador2, this.jogador2, this.jogador1, Integer.parseInt(msg));
+                            this.jogo1.compararCartasCavaleiro(this.empate, this.novaPartida, this.jogador1, this.jogador2, this.jogador2, this.jogador1, Integer.parseInt(msg));
+                        }
+                        break;
+                    case "2":
+                        if (clienteQueEnviou == this.jogador1.socket && this.jogador1.jogadorDaVez) {
+                            this.jogo2.compararCartasHeroi(this.empate, this.novaPartida, this.jogador1, this.jogador2, this.jogador1, this.jogador2, Integer.parseInt(msg));
+                        }
+                        if (clienteQueEnviou == this.jogador2.socket && this.jogador2.jogadorDaVez) {
+                            this.jogo2.compararCartasHeroi(this.empate, this.novaPartida, this.jogador1, this.jogador2, this.jogador2, this.jogador1, Integer.parseInt(msg));
                         }
                         break;
                 }
@@ -114,7 +154,73 @@ public class Servidor {
 
                 break;
             case "FINALIZADA":
-                this.jogo1.gravarLogJogo();
+                var ps1 = new PrintStream(this.jogador1.socket.getOutputStream());
+                var ps2 = new PrintStream(this.jogador2.socket.getOutputStream());
+
+                this.jogo1.carregarCartas();
+                this.jogo1.embaralhar();
+                this.jogo1.distribuir();
+
+                this.jogo2.carregarCartas();
+                this.jogo2.embaralhar();
+                this.jogo2.distribuir();
+
+                ps1.println("\nEscolha o jogo:\n1-Cavaleiros do zodiaco\n2-Heróis Marvel");
+                ps2.println("\nEsperando jogador 1 recomeçar a partida");
+
+                this.jogo1.estadoDaPartida = "RECOMECAR";
+                this.jogo2.estadoDaPartida = "RECOMECAR";
+                break;
+            case "RECOMECAR":
+                if (clienteQueEnviou == jogador1.socket) {
+                    switch (msg) {
+                        case "1":
+                            this.tipoDoJogo = "1";
+                            break;
+                        case "2":
+                            this.tipoDoJogo = "2";
+                            break;
+                    }
+
+                    switch (this.tipoDoJogo) {
+                        case "1":
+                            this.jogo1.estadoDaPartida = "EMPROGRESSO";
+                            this.jogo1.setCartaAtualDosJogadoresCavaleiro(this.jogador1, this.jogador2);
+                            this.jogadores.add(this.jogador1);
+                            this.jogadores.add(this.jogador1);
+                            this.jogadores.add(this.jogador2);
+                            Collections.shuffle(this.jogadores);
+                            if (this.jogo1.verificaTrunfoCavaleiro(this.jogadores.get(0), this.jogadores.get(1), this.novaPartida)) {
+                                this.jogo1.setCartaAtualDosJogadoresCavaleiro(this.jogador1, this.jogador2);
+                                this.jogo1.getCartaAtualDosJogadoresCavaleiro(this.jogador1, this.jogador2);
+                                this.jogo1.enviarInfoParaJogadoresCavaleiro();
+                            } else {
+                                this.jogo1.getCartaAtualDosJogadoresCavaleiro(this.jogador1, this.jogador2);
+
+                                this.jogadores.get(0).jogadorDaVez = true;
+                                this.jogo1.enviarInfoParaJogadoresCavaleiro();
+                            }
+                            break;
+                        case "2":
+                            this.jogo2.estadoDaPartida = "EMPROGRESSO";
+                            this.jogo2.setCartaAtualDosJogadoresHeroi(this.jogador1, this.jogador2);
+                            this.jogadores.add(this.jogador1);
+                            this.jogadores.add(this.jogador1);
+                            this.jogadores.add(this.jogador2);
+                            Collections.shuffle(this.jogadores);
+                            if (this.jogo2.verificaTrunfoHeroi(this.jogadores.get(0), this.jogadores.get(1), this.novaPartida)) {
+                                this.jogo2.setCartaAtualDosJogadoresHeroi(this.jogador1, this.jogador2);
+                                this.jogo2.getCartaAtualDosJogadoresHeroi(this.jogador1, this.jogador2);
+                                this.jogo2.enviarInfoParaJogadoresHeroi();
+                            } else {
+                                this.jogo2.getCartaAtualDosJogadoresHeroi(this.jogador1, this.jogador2);
+
+                                this.jogadores.get(0).jogadorDaVez = true;
+                                this.jogo2.enviarInfoParaJogadoresHeroi();
+                            }
+                            break;
+                    }
+                }
                 break;
         }
     }
